@@ -32,18 +32,6 @@ enum Action
     ChangeState(States),
 }
 
-fn transition_to_startup(_state_info: &mut StateInfo) {
-    // Nothing do to here
-}
-
-fn transition_to_state_1(_state_info: &mut StateInfo) {
-    // TODO: .............................
-}
-
-fn transition_to_state_2(_state_info: &mut StateInfo) {
-    // TODO: .............................
-}
-
 fn do_startup(_state_info: &mut StateInfo) -> Action {
     // Nothing do to here
 
@@ -86,10 +74,21 @@ fn main() {
                 println!("Changing from {:?} to {:?}", state_info.curr_state, next_state);
                 state_info.prev_state = state_info.curr_state;
                 state_info.next_state = next_state;
+                match state_info.prev_state {
+                    States::StartUp => { println!("Finished starting up") },
+                    States::State1 => { },
+                    States::State2 => { },
+                }
+                match (state_info.prev_state, state_info.next_state) {
+                    (_, States::StartUp) => { panic!("WTF!"); },
+                    (States::State1, States::State2) => { },
+                    (States::State2, States::State1) => { },
+                    (_, _) => { },
+                }
                 match state_info.next_state {
-                    States::StartUp => transition_to_startup(&mut state_info),
-                    States::State1 => transition_to_state_1(&mut state_info),
-                    States::State2 => transition_to_state_2(&mut state_info),
+                    States::StartUp => { },
+                    States::State1 => { },
+                    States::State2 => { },
                 }
                 state_info.curr_state = state_info.next_state;
             }
