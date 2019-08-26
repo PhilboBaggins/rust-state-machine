@@ -3,16 +3,22 @@ use std::{thread, time};
 extern crate random_integer;
 
 struct StateInfo {
-    
+    prev_state: States,
+    curr_state: States,
+    next_state: States,
 }
 
 impl StateInfo {
-    fn new() -> StateInfo {
-        StateInfo { }
+    fn new(initial_state: States) -> StateInfo {
+        StateInfo {
+            prev_state: initial_state,
+            curr_state: initial_state,
+            next_state: initial_state,
+        }
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 enum States
 {
     StartUp,
@@ -26,15 +32,15 @@ enum Action
     ChangeState(States),
 }
 
-fn transition_to_startup(_state_info: &mut StateInfo, _prev_state: States) {
+fn transition_to_startup(_state_info: &mut StateInfo) {
     // Nothing do to here
 }
 
-fn transition_to_state_1(_state_info: &mut StateInfo, _prev_state: States) {
+fn transition_to_state_1(_state_info: &mut StateInfo) {
     // TODO: .............................
 }
 
-fn transition_to_state_2(_state_info: &mut StateInfo, _prev_state: States) {
+fn transition_to_state_2(_state_info: &mut StateInfo) {
     // TODO: .............................
 }
 
@@ -62,11 +68,11 @@ fn do_state_2(_state_info: &mut StateInfo) -> Action {
 }
 
 fn main() {
-    let mut current_state = States::StartUp;
-    let mut state_info = StateInfo::new();
+    let initial_state = States::StartUp;
+    let mut state_info = StateInfo::new(initial_state);
 
     loop {
-        let state_func = match current_state {
+        let state_func = match state_info.curr_state {
             States::StartUp => do_startup,
             States::State1 => do_state_1,
             States::State2 => do_state_2,
@@ -76,14 +82,16 @@ fn main() {
             Action::DoNothing => {
                 // Do nothing
             },
-            Action::ChangeState(state) => {
-                println!("Changing from {:?} to {:?}", current_state, state);
-                match state {
-                    States::StartUp => transition_to_startup(&mut state_info, current_state),
-                    States::State1 => transition_to_state_1(&mut state_info, current_state),
-                    States::State2 => transition_to_state_2(&mut state_info, current_state),
+            Action::ChangeState(next_state) => {
+                println!("Changing from {:?} to {:?}", state_info.curr_state, next_state);
+                state_info.prev_state = state_info.curr_state;
+                state_info.next_state = next_state;
+                match state_info.next_state {
+                    States::StartUp => transition_to_startup(&mut state_info),
+                    States::State1 => transition_to_state_1(&mut state_info),
+                    States::State2 => transition_to_state_2(&mut state_info),
                 }
-                current_state = state;
+                state_info.curr_state = state_info.next_state;
             }
         }
 
