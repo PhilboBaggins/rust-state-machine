@@ -64,6 +64,33 @@ fn do_state_3(_state_info: &mut StateInfo) -> Action {
     Action::DoNothing
 }
 
+fn state_transitions(state_info: &mut StateInfo) {
+    // State transitions - Code to execute any time you leave a particular state
+    match state_info.prev_state {
+        States::StartUp => { println!("Finished starting up!") },
+        States::State1 => { },
+        States::State2 => { },
+        States::State3 => { },
+    }
+
+    // State transitions - Code to execute on a specific state transition (from/to combination)
+    match (state_info.prev_state, state_info.next_state) {
+        (_, States::StartUp) => { panic!("WTF!"); },
+        (States::State1, States::State2) => { },
+        (States::State2, States::State1) => { },
+        (States::State3, States::State1) => { println!("Back to the beginning!") },
+        (_, _) => { },
+    }
+
+    // State transitions - Code to execute any time you enter a particular state
+    match state_info.next_state {
+        States::StartUp => { },
+        States::State1 => { },
+        States::State2 => { },
+        States::State3 => { },
+    }
+}
+
 fn main() {
     let initial_state = States::StartUp;
     let mut state_info = StateInfo::new(initial_state);
@@ -86,32 +113,9 @@ fn main() {
                 println!("\nChanging from {:?} to {:?}", state_info.curr_state, next_state);
                 state_info.prev_state = state_info.curr_state;
                 state_info.next_state = next_state;
-                
-                // State transitions - Code to execute any time you leave a particular state
-                match state_info.prev_state {
-                    States::StartUp => { println!("Finished starting up!") },
-                    States::State1 => { },
-                    States::State2 => { },
-                    States::State3 => { },
-                }
-                
-                // State transitions - Code to execute on a specific state transition (from/to combination)
-                match (state_info.prev_state, state_info.next_state) {
-                    (_, States::StartUp) => { panic!("WTF!"); },
-                    (States::State1, States::State2) => { },
-                    (States::State2, States::State1) => { },
-                    (States::State3, States::State1) => { println!("Back to the beginning!") },
-                    (_, _) => { },
-                }
 
-                // State transitions - Code to execute any time you enter a particular state
-                match state_info.next_state {
-                    States::StartUp => { },
-                    States::State1 => { },
-                    States::State2 => { },
-                    States::State3 => { },
-                }
-                
+                state_transitions(&mut state_info);
+
                 state_info.curr_state = state_info.next_state;
                 println!("");
             }
